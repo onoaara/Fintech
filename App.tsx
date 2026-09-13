@@ -1,20 +1,40 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useState } from "react";
+import OnboardingScreen from "./screens/onboarding/OnboardingScreen";
+import { LoginScreen, SignUpScreen } from "./screens/auth";
+import { DashboardScreen } from "./screens/dashboard";
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+  const [currentScreen, setCurrentScreen] = useState<
+    "dashboard" | "signup" | "login" | "onboarding"
+  >("dashboard");
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+  if (currentScreen === "dashboard") {
+    return <DashboardScreen />;
+  }
+
+  if (currentScreen === "signup") {
+    return (
+      <SignUpScreen
+        onLoginPress={() => setCurrentScreen("login")}
+        onSignUp={(data) => {
+          console.log("Account created:", data);
+          setCurrentScreen("dashboard");
+        }}
+      />
+    );
+  }
+
+  if (currentScreen === "login") {
+    return (
+      <LoginScreen
+        onSignUp={() => setCurrentScreen("signup")}
+        onLogin={(credentials) => {
+          console.log("Logged in with:", credentials);
+          setCurrentScreen("dashboard");
+        }}
+      />
+    );
+  }
+
+  return <OnboardingScreen onFinish={() => setCurrentScreen("login")} />;
+}
